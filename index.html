@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-way Bill Determination Tool — Educational Reference</title>
+<meta name="description" content="Educational E-way Bill determination tool for Inter-State and Intra-State movement of goods across all 36 Indian States and Union Territories. Based on CGST Rules, 2017.">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Refined Professional White
+   ══════════════════════════════════════════════════════════════ */
+:root {
+  --white: #ffffff;
+  --bg: #f0f2f7;
+  --bg-card: #ffffff;
+  --border: #e2e5eb;
+  --border-light: #f0f1f3;
+  --border-focus: #5a6acf;
+  --text-primary: #1a1d26;
+  --text-secondary: #5f6577;
+  --text-muted: #9ca0ad;
+  --accent: #5a6acf;
+  --accent-light: #eef0fb;
+  --accent-text: #4a59b5;
+  --accent-glow: rgba(90,106,207,0.08);
+  --success: #2d9f6f;
+  --success-light: #edf8f3;
+  --success-border: #c3e6d5;
+  --danger: #d45454;
+  --danger-light: #fdf0f0;
+  --danger-border: #f0c9c9;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+  --warning-text: #92400e;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.03);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.07), 0 8px 28px rgba(0,0,0,0.05);
+  --shadow-result: 0 4px 20px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.04);
+  --transition: 0.2s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(145deg, #eef2f9 0%, #f0eef7 35%, #edf5f8 70%, #f2f0f8 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -5%;
+  left: -10%;
+  right: -10%;
+  bottom: -5%;
+  background: url('india_routes_bg.png') center center / cover no-repeat;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LAYOUT
+   ══════════════════════════════════════════════════════════════ */
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOP BAR
+   ══════════════════════════════════════════════════════════════ */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), #7c8ae8);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 17px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(90,106,207,0.25);
+}
+
+.topbar-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.topbar-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.stats-bar {
+  display: flex;
+  gap: 16px;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  transition: all var(--transition);
+}
+
+.stat-pill:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: #d0d3da;
+}
+
+.stat-pill strong {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.stat-pill span {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HERO BANNER
+   ══════════════════════════════════════════════════════════════ */
+.hero-banner {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-card);
+}
+
+.hero-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  opacity: 0.30;
+  filter: grayscale(15%) brightness(1.05);
+}
+
+.hero-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.93) 0%,
+    rgba(255,255,255,0.78) 40%,
+    rgba(255,255,255,0.55) 100%
+  );
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.hero-content { flex: 1; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-light);
+  color: var(--accent-text);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  border: 1px solid rgba(90,106,207,0.12);
+}
+
+.hero-content h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.hero-stat {
+  text-align: center;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  min-width: 80px;
+  transition: transform var(--transition);
+}
+
+.hero-stat:hover { transform: translateY(-2px); }
+
+.hero-stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.hero-stat-lbl {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FORM GRID
+   ══════════════════════════════════════════════════════════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CARDS
+   ══════════════════════════════════════════════════════════════ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: #d8dae0;
+  transform: translateY(-1px);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.card-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.card-ico.route {
+  background: var(--accent-light);
+  color: var(--accent-text);
+}
+
+.card-ico.goods {
+  background: #fef4e8;
+  color: #c48a1a;
+}
+
+.card-h {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.card-d {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FORM ELEMENTS
+   ══════════════════════════════════════════════════════════════ */
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+
+.field-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+select, input[type="number"] {
+  width: 100%;
+  padding: 10px 13px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca0ad' d='M2.5 4.5l3.5 3.5 3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+select:focus, input[type="number"]:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(90,106,207,0.1);
+}
+
+select:hover, input[type="number"]:hover {
+  border-color: #cdd0d8;
+}
+
+input[type="number"]::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* ══════════════════════════════════════════════════════════════
+   MOVEMENT BADGE
+   ══════════════════════════════════════════════════════════════ */
+.movement-badge {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition);
+  line-height: 1.4;
+}
+
+.movement-badge.empty {
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+}
+
+.movement-badge.inter {
+  background: #fff5f0;
+  color: #c54a2a;
+  border: 1px solid #f5d0c4;
+}
+
+.movement-badge.intra {
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.movement-badge .route-detail {
+  font-weight: 400;
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STATE BADGE
+   ══════════════════════════════════════════════════════════════ */
+.state-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-light);
+  color: var(--accent-text);
+  font-size: 9.5px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-left: 5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.info-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: -8px;
+  margin-bottom: 14px;
+  font-style: italic;
+}
+
+.field-group { transition: all 0.3s ease; }
+.field-group.hidden { display: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   GUJARAT INFO BUTTON & EXPLANATION
+   ══════════════════════════════════════════════════════════════ */
+.label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: var(--accent-light);
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  font-family: 'Georgia', serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 0;
+}
+
+.info-btn:hover {
+  background: var(--accent);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(90,106,207,0.3);
+}
+
+.info-explanation {
+  background: var(--accent-light);
+  border: 1px solid rgba(90,106,207,0.18);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  animation: slideDown 0.25s ease;
+  position: relative;
+}
+
+.info-explanation strong {
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.info-explanation.hidden {
+  display: none;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); max-height: 0; }
+  to   { opacity: 1; transform: translateY(0); max-height: 200px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESULT PANEL
+   ══════════════════════════════════════════════════════════════ */
+.result-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--border-light);
+  transition: background 0.3s ease;
+}
+
+.result-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  font-size: 24px;
+  transition: all var(--transition);
+}
+
+.result-panel.default .result-icon-wrap {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.result-panel.yes-result .result-icon-wrap {
+  background: var(--danger-light);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+
+.result-panel.no-result .result-icon-wrap {
+  background: var(--success-light);
+  border: 1px solid var(--success-border);
+  color: var(--success);
+}
+
+.result-text {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.result-panel.yes-result .result-text { color: var(--danger); }
+.result-panel.no-result .result-text  { color: var(--success); }
+
+.result-details {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.result-panel.yes-result::before { background: linear-gradient(90deg, var(--danger), transparent); }
+.result-panel.no-result::before  { background: linear-gradient(90deg, var(--success), transparent); }
+
+.result-panel.yes-result,
+.result-panel.no-result {
+  box-shadow: var(--shadow-result);
+}
+
+/* Notification reference styling */
+.notif-ref {
+  font-size: 11.5px;
+  opacity: 0.55;
+  display: block;
+  margin-top: 10px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════════════════ */
+.btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #6d7ce0);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #4d5dbd, #5f6ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(90,106,207,0.3);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+.btn-outline {
+  background: var(--white);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  background: var(--bg);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.hidden { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   DISCLAIMER
+   ══════════════════════════════════════════════════════════════ */
+.disclaimer-bar {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.disclaimer-bar i {
+  color: var(--warning-text);
+  font-size: 14px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.disclaimer-bar p {
+  font-size: 11.5px;
+  color: var(--warning-text);
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════════ */
+.footer {
+  text-align: center;
+  padding: 24px 0 0;
+  margin-top: 32px;
+  border-top: 1px solid var(--border-light);
+}
+
+.footer p {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.footer-brand {
+  margin-top: 10px;
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════════ */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.result-panel.yes-result,
+.result-panel.no-result {
+  animation: slideUp 0.35s ease;
+}
+
+.result-panel.yes-result .result-icon-wrap,
+.result-panel.no-result .result-icon-wrap {
+  animation: pulse 0.5s ease 0.2s;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .hero-stats { display: none; }
+  .hero-fade { padding: 0 28px; }
+}
+
+@media (max-width: 768px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .hero-content h1 { font-size: 21px; }
+  .hero-img { height: 160px; }
+  .hero-fade { padding: 0 20px; }
+  .result-panel { padding: 28px 20px; }
+  .app { padding: 16px 14px 40px; }
+}
+
+@media (max-width: 480px) {
+  .stats-bar { display: none; }
+  .topbar { margin-bottom: 18px; }
+  .hero-content h1 { font-size: 18px; }
+  .hero-content p { font-size: 12px; }
+  .hero-img { height: 140px; }
+  .disclaimer-bar { flex-direction: column; gap: 6px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- ═══════════ TOP BAR ═══════════ -->
+  <header class="topbar" id="topBar">
+    <div class="topbar-left">
+      <div class="logo"><i class="fas fa-route"></i></div>
+      <div>
+        <div class="topbar-title">E-way Bill Tool</div>
+        <div class="topbar-sub">GST Educational Reference</div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-pill"><strong>36</strong><span>States & UTs</span></div>
+      <div class="stat-pill"><strong>Rule 138</strong><span>CGST</span></div>
+    </div>
+  </header>
+
+  <!-- ═══════════ HERO BANNER ═══════════ -->
+  <section class="hero-banner" id="heroBanner">
+    <img src="banner.png" alt="E-way Bill logistics" class="hero-img">
+    <div class="hero-fade">
+      <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-shield-halved"></i> Rule 138 — CGST Rules, 2017</div>
+        <h1>E-way Bill Determination</h1>
+        <p>Verify whether your consignment requires an E-way Bill for inter-state and intra-state movement of goods across India.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val">36</div>
+          <div class="hero-stat-lbl">States & UTs</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">24/7</div>
+          <div class="hero-stat-lbl">Available</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FORM GRID ═══════════ -->
+  <div class="form-grid" id="formGrid">
+
+    <!-- LEFT — Route -->
+    <div class="card" id="routeCard">
+      <div class="card-head">
+        <div class="card-ico route"><i class="fas fa-location-dot"></i></div>
+        <div>
+          <div class="card-h">Consignment Route</div>
+          <div class="card-d">Origin & destination of goods</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="sourceState">Source State</label>
+        <select id="sourceState"><option value="">Select source state</option></select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="destinationState">Destination State</label>
+        <select id="destinationState"><option value="">Select destination state</option></select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Movement Type <span style="font-weight:400;color:var(--text-muted)">(auto-detected)</span></label>
+        <div class="movement-badge empty" id="movementBadge">
+          <i class="fas fa-route"></i> Select both states to detect movement type
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — Goods -->
+    <div class="card" id="goodsCard">
+      <div class="card-head">
+        <div class="card-ico goods"><i class="fas fa-boxes-stacked"></i></div>
+        <div>
+          <div class="card-h">Goods & Valuation</div>
+          <div class="card-d">Commodity & invoice details</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="goodsDropdown">Goods</label>
+        <select id="goodsDropdown"><option value="">Select goods</option></select>
+      </div>
+
+      <!-- Transaction type (Gujarat / Maharashtra) -->
+      <div class="field-group hidden" id="transactionTypeGroup">
+        <div class="field">
+          <label class="field-label" id="transactionTypeLabel">Type of Transaction</label>
+          <select id="transactionType"><option value="">Select transaction type</option></select>
+          <p class="info-note" id="transactionNote"></p>
+        </div>
+      </div>
+
+      <!-- Gujarat movement type -->
+      <div class="field-group hidden" id="movementTypeStateGroup">
+        <div class="field">
+          <div class="label-with-info">
+            <label class="field-label" style="margin-bottom:0">Type of Movement</label>
+            <button type="button" class="info-btn" id="gujaratInfoBtn" onclick="toggleGujaratInfo()" title="What does 'city' mean?">i</button>
+          </div>
+          <div class="info-explanation hidden" id="gujaratInfoBox">
+            <strong><i class="fas fa-info-circle"></i> Explanation</strong>
+            For the purpose of this notification, the word &ldquo;city&rdquo; shall be the city as notified by the Government under the Gujarat Municipalities Act, 1963 and / or the Bombay Provincial Municipal Corporation Act, 1949 and shall include Village as notified under the Bombay Land Revenue Code, 1879 and the word &ldquo;intra-city&rdquo; shall be construed accordingly.
+          </div>
+          <select id="movementTypeState" style="margin-top:6px">
+            <option value="">Select movement type</option>
+            <option value="intra-city">Intra City Movement</option>
+            <option value="intercity">Inter-city Movement</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Same city/district (for Chhattisgarh, Madhya Pradesh, Rajasthan) -->
+      <div class="field-group hidden" id="sameCityGroup">
+        <div class="field">
+          <label class="field-label">Movement within same City / District?</label>
+          <select id="sameCity">
+            <option value="">Select</option>
+            <option value="yes">Yes — Within same city / district</option>
+            <option value="no">No — Between different cities / districts</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="typeOfGoods">Tax Type</label>
+        <select id="typeOfGoods">
+          <option value="">Select type</option>
+          <option value="taxable">Taxable</option>
+          <option value="exempt">Exempt</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="invoiceValue">Invoice Value (₹)</label>
+        <input type="number" id="invoiceValue" placeholder="Enter invoice value">
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ RESULT ═══════════ -->
+  <div class="result-panel default" id="resultCard">
+    <div class="result-icon-wrap">
+      <i class="fas fa-magnifying-glass-chart"></i>
+    </div>
+    <div class="result-text">Fill the form to check requirement</div>
+    <div class="result-details">Complete all fields to determine E-way Bill applicability</div>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="checkBtn" onclick="calculateEwayBillRequirement()">
+        <i class="fas fa-bolt"></i> Check Requirement
+      </button>
+      <button class="btn btn-outline hidden" id="resetBtn" onclick="resetForm()">
+        <i class="fas fa-rotate-left"></i> Check Another
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer">
+    <p>This tool is for <strong>educational and informational purposes only</strong> and does not constitute legal advice.<br>
+    Always verify with the latest GST notifications from CBIC and respective state/UT authorities.</p>
+    <p class="footer-brand">Built with care for GST learners & professionals</p>
+    <p class="footer-brand" style="margin-top:6px; opacity:0.8; font-size:11px;">Created by <strong style="color:var(--accent-text); opacity:1;">Vivek Raval</strong></p>
+  </footer>
+
+</div>
+
+<script>
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MASTER DATA — ALL 36 STATES & UTs (Updated from Verified Excel Database)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+const STATES = [
+  "Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam",
+  "Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir",
+  "Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh",
+  "Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry",
+  "Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura",
+  "Uttar Pradesh","Uttarakhand","West Bengal"
+];
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SPECIFIED GOODS BY STATE (Per Verified Excel + Notifications)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+const GOODS_BY_STATE = {
+  "Chhattisgarh": [
+    "Iron and Steel",
+    "Articles of Iron and Steel",
+    "Electrical & Electronic Goods",
+    "Parts and Accessories of Motor Vehicles and Other Vehicles",
+    "Furniture",
+    "Mineral Waters and Aerated Waters",
+    "Beverages",
+    "Footwear",
+    "Cement and Cement Products",
+    "Aluminum and Aluminum Products",
+    "Machinery, Mechanical Appliances and Parts Thereof"
+  ],
+  "Goa": [
+    "Iron and Steel",
+    "Ferrous and Non-ferrous Metal and Scrap thereof",
+    "All types of Wall and Flooring Tiles",
+    "Processed Tobacco and Products thereof",
+    "Cigarette, Gutkha and Pan Masala",
+    "All types of Plywood, Block Board, Decorative and Laminated Sheets",
+    "Coal including Coke in all its forms",
+    "Timber and Timber Products",
+    "Cement and all types of Cement Products",
+    "Marble and Granite",
+    "Kota Stones",
+    "Naphtha",
+    "FMCG",
+    "Namkins & Sweetmeats",
+    "I.T. Products",
+    "Electronic Goods",
+    "Pipes & Fittings of all kinds",
+    "Plumbing & Sanitary Items",
+    "Cashew Nuts",
+    "Electrical Goods",
+    "Readymade Garments",
+    "Furniture of all kinds"
+  ],
+  "Gujarat": [
+    "Hank","Yarn","Fabric","Garments"
+  ],
+  "Jharkhand": [
+    "Iron and Steel",
+    "Sponge Iron",
+    "Coal including Coke in all its forms",
+    "Motor Parts",
+    "All kinds of Edible Oil",
+    "Tobacco/Tobacco Products, Cigarette, Gutkha and Pan Masala",
+    "Iron Ore",
+    "Ferrous and Non-ferrous Metal and Scrap thereof",
+    "Cement",
+    "Tiles, Marble, Granite",
+    "Timber and Timber Products",
+    "All types of Plywood, Block Board, Flush Doors, Decorative and Laminated Sheets"
+  ],
+  "Kerala": [
+    "Gold and Precious Stones"
+  ],
+  "Madhya Pradesh": [
+    "Tobacco","Pan Masala","Medicines","Surgical Items","APIs"
+  ],
+  "Maharashtra": [
+    "Hank","Yarn","Fabric","Garments"
+  ],
+  "Punjab": [
+    "Iron and Steel in all forms and its waste thereof",
+    "Non-ferrous Metals, their Alloys, Finished Products and Waste thereof",
+    "Tobacco and its Products, Pan Masala, Katha, Cigarettes",
+    "Furniture",
+    "All types of Plywood, Block Board, Decorative and Laminated Sheets",
+    "Timber",
+    "Building Materials including Marble, Granite, Kota Stone, Red Sand Stone, Chips, Crazy, Tiles and Sanitary Goods",
+    "Cement",
+    "All kinds of Polymers including Plastic Granules, Plastic Powder, Master Batches and Plastic Resin",
+    "All types of Yarn including Partially Oriented Yarn, Fibre, Polyester Top, Polyester Chips including Waste",
+    "Edible Oils"
+  ],
+  "Rajasthan": [
+    "Tobacco","Tobacco Products","Chewing Tobacco","Khaini",
+    "Cigarettes","Bidi","Pan Masala",
+    "Wood","Articles of Wood",
+    "Iron","Steel"
+  ],
+  "Tamil Nadu": [
+    "Agricultural Implements",
+    "Handloom Textiles",
+    "Hank Yarn",
+    "Khadi Products",
+    "Fertilizers",
+    "Fresh Vegetables & Fruits",
+    "Fishnets",
+    "Handicrafts",
+    "Palm Products",
+    "Pulses & Grains",
+    "Siddha Medicine",
+    "Woven Fabrics",
+    "Rubber Balloons",
+    "Writing Instruments",
+    "Coir Products"
+  ]
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NOTIFICATION REFERENCES (From Verified Excel)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+const NOTIFICATIONS = {
+  "central":           "Rule 138(1) of the CGST Rules, 2017",
+  "Andhra Pradesh":    "CCTs Ref. in CCW/GST/74/2015, dated 11th April 2018",
+  "Arunachal Pradesh": "Notification No. 14/2018-State Tax, dated 23rd March 2018",
+  "Assam":             "State GST Rules — Rule 138",
+  "Bihar":             "Notification No. S.O. 14, dated 14th January 2019",
+  "Chhattisgarh":      "Notification No. F-10-31/2018/CT/V(46), dated 19th June 2018",
+  "Delhi":             "Notification No. F. No. 3(134)/Policy-GST/2018/1626-36, dated 28/03/2018",
+  "Goa":               "Notification No. CCT/26-2/2017-18/31, dated 29th March 2018",
+  "Gujarat":           "Notification No. GSL/GST/RULE-138(14)/B.19, dated 19th September 2018",
+  "Haryana":           "Notification No. 49/ST-2, dated 19th April 2018",
+  "Himachal Pradesh":  "Notification No. 12-4/78-EXN-TAX-17408, dated 31st May 2018",
+  "Jammu and Kashmir": "Notification No. 64, dated 30th Nov 2019",
+  "Jharkhand":         "Notification No. S.O. 66, dated 26th September 2018",
+  "Karnataka":         "Notification No. FD 47 CSL 2017, dated 15 March 2018",
+  "Kerala":            "Notification No. 10/2024-State Tax",
+  "Madhya Pradesh":    "Notification No. FA3-08/2018/1/V(18), dated 23rd March 2022",
+  "Maharashtra":       "Notification No. 15E/2018 - State Tax (File No. JC(HQ)-1/GST/2018/Noti/1/E-way Bill/ADM-8)",
+  "Manipur":           "CBIC Press Release dated 24th May 2018",
+  "Meghalaya":         "Notification No. ERTS (T) 84/2017/20, dated 20th April 2018",
+  "Mizoram":           "Notification No. J.21011/2(iii)/2018-TAX/Pt, dated 2nd July 2018",
+  "Nagaland":          "Notification No. 6/2018, dated 19th April 2018",
+  "Odisha":            "Press Release dated 31st May 2018",
+  "Puducherry":        "Notification No. F. No. 3240/CTD/GST/2018/3, dated 24th April 2018",
+  "Punjab":            "Notification No. PA/ETC/2018/175, dated 13th Sept 2018",
+  "Rajasthan":         "Notification No. F.17(131)-I/ACCT/GST/2017/3743, dated 06.08.2018, as amended by notification dated 24.02.2022",
+  "Sikkim":            "State GST Rules — Rule 138",
+  "Tamil Nadu":        "Notification No. 09, dated 31st May 2018",
+  "Telangana":         "Press Release dated 10th April 2018",
+  "Tripura":           "Notification No. F.1-11(91)-TAX/GST/2018 (Part-I), dated 17th April 2018",
+  "Uttar Pradesh":     "Notification No. 38, dated 11th April 2018",
+  "Uttarakhand":       "Notification No. 239/CSTUK/GST-Vidhi/2018-19, dated 17th April 2018",
+  "West Bengal":       "Notification No. 02/2026-C.T./GST dated 22.05.2026",
+  "Andaman and Nicobar Islands": "UT Administration Notification",
+  "Chandigarh":        "UT Administration Notification",
+  "Dadra and Nagar Haveli and Daman and Diu": "UT Administration Notification",
+  "Ladakh":            "UT Administration Notification",
+  "Lakshadweep":       "UT Administration Notification"
+};
+
+/* States/UTs that are fully exempt from intra-state e-way bill */
+const FULLY_EXEMPT_INTRA_UTs = new Set([
+  "Andaman and Nicobar Islands",
+  "Lakshadweep"
+]);
+
+/* States that need same city/district question for intra-state */
+const SAME_CITY_STATES = new Set(["Chhattisgarh","Madhya Pradesh","Rajasthan"]);
+
+/* Madhya Pradesh items that are fully exempt from e-way bill even for intercity */
+const MP_EXEMPT_GOODS = new Set(["Medicines","Surgical Items","APIs"]);
+
+/* Madhya Pradesh specified goods with ₹50,000 threshold */
+const MP_THRESHOLD_GOODS = new Set(["Tobacco","Pan Masala"]);
+
+/* Tamil Nadu exempt goods (no e-way bill required at any value) */
+const TN_EXEMPT_GOODS = new Set([
+  "Agricultural Implements","Handloom Textiles","Hank Yarn","Khadi Products",
+  "Fertilizers","Fresh Vegetables & Fruits","Fishnets","Handicrafts",
+  "Palm Products","Pulses & Grains","Siddha Medicine","Woven Fabrics",
+  "Rubber Balloons","Writing Instruments","Coir Products"
+]);
+
+/* Gujarat Group A: Textile items */
+const GJ_TEXTILES = new Set(["Hank","Yarn","Fabric","Garments"]);
+
+/* Maharashtra specified textiles */
+const MH_SPECIFIED = new Set(["Hank","Yarn","Fabric","Garments"]);
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TRANSACTION OPTIONS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+const GUJARAT_TX_OPTIONS = [
+  { value: "job-work",       label: "For Job Work"    },
+  { value: "other-than-job", label: "For Any Purpose" }
+];
+
+const WB_TX_OPTIONS = [
+  { value: "job-work",       label: "For Job Work"    },
+  { value: "other-than-job", label: "For Any Purpose" }
+];
+
+const MH_TX_OPTIONS_SPECIFIED = [
+  { value: "job-work-50km",    label: "For Job Work (upto 50 KM)"  },
+  { value: "job-work-above50", label: "For Job Work (above 50 KM)" }
+];
+
+const MH_TX_OPTIONS_OTHER = [
+  { value: "job-work",       label: "For Job Work"            },
+  { value: "other-than-job", label: "For Other Than Job Work" }
+];
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DOM REFERENCES & STATE POPULATION
+   ═══════════════════════════════════════════════════════════════════════════════ */
+const source    = document.getElementById("sourceState");
+const dest      = document.getElementById("destinationState");
+const goodsDrop = document.getElementById("goodsDropdown");
+
+STATES.forEach(s => { source.add(new Option(s,s)); dest.add(new Option(s,s)); });
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MOVEMENT BADGE & DYNAMIC UI
+   ═══════════════════════════════════════════════════════════════════════════════ */
+function updateMovementBadge() {
+  const badge = document.getElementById("movementBadge");
+  const s = source.value, d = dest.value;
+  if (!s || !d) {
+    badge.className = "movement-badge empty";
+    badge.innerHTML = '<i class="fas fa-route"></i> Select both states to detect movement type';
+  } else if (s !== d) {
+    badge.className = "movement-badge inter";
+    badge.innerHTML = `<i class="fas fa-arrow-right-arrow-left"></i> Inter-State Movement <span class="route-detail">(${s} → ${d})</span>`;
+  } else {
+    badge.className = "movement-badge intra";
+    badge.innerHTML = `<i class="fas fa-map-marker-alt"></i> Intra-State Movement <span class="route-detail">(within ${s})</span>`;
+  }
+  updateSameCityVisibility();
+  updateGujaratMovementVisibility();
+}
+
+function updateSameCityVisibility() {
+  const src = source.value, dst = dest.value;
+  const group = document.getElementById("sameCityGroup");
+  const isIntra = src && dst && src === dst;
+  if (isIntra && SAME_CITY_STATES.has(src)) {
+    group.classList.remove("hidden");
+  } else {
+    group.classList.add("hidden");
+    document.getElementById("sameCity").value = "";
+  }
+}
+
+function updateGujaratMovementVisibility() {
+  const src = source.value, dst = dest.value;
+  const isIntra = src && dst && src === dst;
+  const mvGJGroup = document.getElementById("movementTypeStateGroup");
+  if (src === "Gujarat" && isIntra) {
+    mvGJGroup.classList.remove("hidden");
+  } else {
+    mvGJGroup.classList.add("hidden");
+    document.getElementById("movementTypeState").value = "";
+    document.getElementById("gujaratInfoBox").classList.add("hidden");
+  }
+}
+
+/* Gujarat info button toggle */
+function toggleGujaratInfo() {
+  const box = document.getElementById("gujaratInfoBox");
+  box.classList.toggle("hidden");
+}
+
+/* Close Gujarat info box when clicking outside */
+document.addEventListener("click", function(e) {
+  const box = document.getElementById("gujaratInfoBox");
+  const btn = document.getElementById("gujaratInfoBtn");
+  if (!box.classList.contains("hidden") && !box.contains(e.target) && e.target !== btn) {
+    box.classList.add("hidden");
+  }
+});
+
+function updateGoods() {
+  goodsDrop.innerHTML = '<option value="">Select goods</option>';
+  const list = GOODS_BY_STATE[source.value] || [];
+  if (list.length > 0) {
+    list.forEach(g => goodsDrop.add(new Option(g,g)));
+    goodsDrop.add(new Option("Other than Specified Goods","Other than Specified Goods"));
+  } else {
+    goodsDrop.add(new Option("Any Goods","Any Goods"));
+  }
+  updateStateSpecificFields();
+}
+
+function updateStateSpecificFields() {
+  const src     = source.value;
+  const txGroup = document.getElementById("transactionTypeGroup");
+  const txSel   = document.getElementById("transactionType");
+  const note    = document.getElementById("transactionNote");
+
+  txGroup.classList.add("hidden");
+  txSel.innerHTML = '<option value="">Select transaction type</option>';
+  note.textContent = "";
+
+  if (src === "Gujarat") {
+    GUJARAT_TX_OPTIONS.forEach(o => txSel.add(new Option(o.label, o.value)));
+    txGroup.classList.remove("hidden");
+  } else if (src === "Maharashtra") {
+    updateMaharashtraTransactionOpts();
+    txGroup.classList.remove("hidden");
+  } else if (src === "West Bengal") {
+    WB_TX_OPTIONS.forEach(o => txSel.add(new Option(o.label, o.value)));
+    txGroup.classList.remove("hidden");
+  }
+}
+
+function updateMaharashtraTransactionOpts() {
+  const txSel = document.getElementById("transactionType");
+  const note  = document.getElementById("transactionNote");
+  txSel.innerHTML = '<option value="">Select transaction type</option>';
+
+  if (MH_SPECIFIED.has(goodsDrop.value)) {
+    MH_TX_OPTIONS_SPECIFIED.forEach(o => txSel.add(new Option(o.label, o.value)));
+  } else {
+    MH_TX_OPTIONS_OTHER.forEach(o => txSel.add(new Option(o.label, o.value)));
+  }
+  note.textContent = "";
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   AUTO-RECALCULATE: If result is already shown, re-run calculation on any change
+   ═══════════════════════════════════════════════════════════════════════════════ */
+function isResultShown() {
+  const card = document.getElementById("resultCard");
+  return card.classList.contains("yes-result") || card.classList.contains("no-result");
+}
+
+function autoRecalculate() {
+  if (isResultShown()) {
+    _skipScroll = true;
+    document.getElementById("checkBtn").classList.remove("hidden");
+    document.getElementById("resetBtn").classList.add("hidden");
+    calculateEwayBillRequirement();
+    _skipScroll = false;
+  }
+}
+
+goodsDrop.addEventListener("change", () => {
+  if (source.value === "Maharashtra") updateMaharashtraTransactionOpts();
+  autoRecalculate();
+});
+
+source.addEventListener("change", () => { updateGoods(); updateMovementBadge(); autoRecalculate(); });
+dest.addEventListener("change",   () => { updateMovementBadge(); autoRecalculate(); });
+
+document.getElementById("transactionType").addEventListener("change", autoRecalculate);
+document.getElementById("movementTypeState").addEventListener("change", autoRecalculate);
+document.getElementById("sameCity").addEventListener("change", autoRecalculate);
+document.getElementById("typeOfGoods").addEventListener("change", autoRecalculate);
+document.getElementById("invoiceValue").addEventListener("input", autoRecalculate);
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   HELPER FUNCTIONS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+function lbl(m) {
+  return {"inter-state":"Inter-State Movement","intercity":"Inter-city Movement","intra-city":"Intra City Movement","intra-state":"Intra-State"}[m] || m;
+}
+
+function fmt(n) { return n.toLocaleString("en-IN"); }
+
+function notifRef(state) {
+  const n = NOTIFICATIONS[state] || NOTIFICATIONS["central"];
+  return `<span class="notif-ref">(${n})</span>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MAIN CALCULATION LOGIC — MASTER ENGINE
+   ═══════════════════════════════════════════════════════════════════════════════ */
+function calculateEwayBillRequirement() {
+  const src   = source.value;
+  const dst   = dest.value;
+  const goods = goodsDrop.value;
+  const tax   = document.getElementById("typeOfGoods").value;
+  const val   = parseFloat(document.getElementById("invoiceValue").value);
+  const txType      = document.getElementById("transactionType").value;
+  const moveState   = document.getElementById("movementTypeState").value;
+  const sameCityVal = document.getElementById("sameCity").value;
+
+  /* Determine movement type */
+  let move;
+  if (src && dst && src !== dst) {
+    move = "inter-state";
+  } else if (src && dst && src === dst) {
+    if (SAME_CITY_STATES.has(src)) {
+      move = sameCityVal === "yes" ? "intra-city" : sameCityVal === "no" ? "intercity" : "";
+    } else if (src === "Gujarat") {
+      move = moveState || "intercity";
+    } else {
+      move = "intra-state";
+    }
+  } else {
+    move = "";
+  }
+
+  /* Validation */
+  if (!src || !dst || !goods || !tax || isNaN(val) || val <= 0) {
+    showResult(false, "Incomplete Details", "Please fill all required fields.");
+    return;
+  }
+  if (src === dst && SAME_CITY_STATES.has(src) && !sameCityVal) {
+    showResult(false, "Incomplete Details", `Please answer whether the movement is within the same City/District for ${src}.`);
+    return;
+  }
+  const needsTx = (src === "Gujarat" || src === "Maharashtra" || src === "West Bengal");
+  const needsMvGJ = (src === "Gujarat" && move !== "inter-state");
+  if (needsTx && !txType) {
+    showResult(false, "Incomplete Details", `Please select the Type of Transaction for ${src}.`);
+    return;
+  }
+  if (needsMvGJ && !moveState) {
+    showResult(false, "Incomplete Details", "Please select the Type of Movement for Gujarat.");
+    return;
+  }
+
+  /* ─── EXEMPT GOODS ─── */
+  if (tax === "exempt") {
+    showResult(false, "E-way Bill Not Required",
+      `Exempt goods are not liable for E-way Bill generation under GST.${notifRef("central")}`);
+    return;
+  }
+
+  const specified = (goods !== "Other than Specified Goods" && goods !== "Any Goods");
+
+  /* ─── INTER-STATE (Universal ₹50,000 Rule) ─── */
+  if (move === "inter-state") {
+    val > 50000
+      ? showResult(true, "E-way Bill Required",
+          `Inter-State (${src} → ${dst}): Consignment value ₹${fmt(val)} exceeds the central threshold of ₹50,000.${notifRef("central")}`)
+      : showResult(false, "E-way Bill Not Required",
+          `Inter-State (${src} → ${dst}): Consignment value ₹${fmt(val)} does not exceed the central threshold of ₹50,000.${notifRef("central")}`);
+    return;
+  }
+
+  /* ─── INTRA-STATE / INTRA-UT LOGIC ─── */
+
+  /* Fully exempt UTs for intra-state */
+  if (FULLY_EXEMPT_INTRA_UTs.has(src)) {
+    showResult(false, "E-way Bill Not Required",
+      `${src}: Intra-state/UT movement is exempt from E-way Bill requirements.${notifRef(src)}`);
+    return;
+  }
+
+  /* Lakshadweep — fully exempt all movements */
+  if (src === "Lakshadweep") {
+    showResult(false, "E-way Bill Not Required",
+      `Lakshadweep: E-way Bill is not required for any movement.${notifRef(src)}`);
+    return;
+  }
+
+  /* Dadra and Nagar Haveli and Daman and Diu — standard ₹50,000 */
+  if (src === "Dadra and Nagar Haveli and Daman and Diu") {
+    val > 50000
+      ? showResult(true, "E-way Bill Required",
+          `${src}: Consignment value ₹${fmt(val)} exceeds threshold of ₹50,000.${notifRef(src)}`)
+      : showResult(false, "E-way Bill Not Required",
+          `${src}: Consignment value ₹${fmt(val)} does not exceed threshold of ₹50,000.${notifRef(src)}`);
+    return;
+  }
+
+  /* ═══════ STATE-BY-STATE INTRA-STATE LOGIC ═══════ */
+  switch (src) {
+
+    /* ─── States with standard ₹50,000 threshold ─── */
+    case "Andhra Pradesh": case "Arunachal Pradesh": case "Assam": case "Chandigarh":
+    case "Haryana": case "Himachal Pradesh": case "Karnataka": case "Ladakh":
+    case "Manipur": case "Meghalaya": case "Mizoram": case "Nagaland":
+    case "Odisha": case "Puducherry": case "Sikkim": case "Telangana":
+    case "Tripura": case "Uttar Pradesh": case "Uttarakhand":
+      val > 50000
+        ? showResult(true, "E-way Bill Required",
+            `${src}: Consignment value ₹${fmt(val)} exceeds the threshold of ₹50,000.${notifRef(src)}`)
+        : showResult(false, "E-way Bill Not Required",
+            `${src}: Consignment value ₹${fmt(val)} does not exceed threshold of ₹50,000.${notifRef(src)}`);
+      break;
+
+    /* ─── Bihar ─── */
+    case "Bihar":
+      val > 100000
+        ? showResult(true, "E-way Bill Required",
+            `Bihar (${lbl(move)}): Consignment value ₹${fmt(val)} exceeds the intra-state threshold of ₹1,00,000.${notifRef(src)}`)
+        : showResult(false, "E-way Bill Not Required",
+            `Bihar (${lbl(move)}): Consignment value ₹${fmt(val)} does not exceed intra-state threshold of ₹1,00,000.${notifRef(src)}`);
+      break;
+
+    /* ─── Delhi ─── */
+    case "Delhi":
+      val > 100000
+        ? showResult(true, "E-way Bill Required",
+            `Delhi (${lbl(move)}): Consignment value ₹${fmt(val)} exceeds the intra-state threshold of ₹1,00,000.${notifRef(src)}`)
+        : showResult(false, "E-way Bill Not Required",
+            `Delhi (${lbl(move)}): Consignment value ₹${fmt(val)} does not exceed intra-state threshold of ₹1,00,000.${notifRef(src)}`);
+      break;
+
+    /* ─── Chhattisgarh ─── */
+    case "Chhattisgarh":
+      if (specified) {
+        /* Specified goods — ₹50,000 threshold for intra-state movement */
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Chhattisgarh (${lbl(move)}): Specified goods — ${goods} — value ₹${fmt(val)} exceeds threshold of ₹50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Chhattisgarh (${lbl(move)}): Specified goods — ${goods} — value ₹${fmt(val)} does not exceed ₹50,000.${notifRef(src)}`);
+      } else {
+        /* Other than specified goods — Not Required */
+        showResult(false, "E-way Bill Not Required",
+          `Chhattisgarh: Goods other than specified goods are exempt from intra-state E-way Bill requirements.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── Goa ─── */
+    case "Goa":
+      if (specified) {
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Goa: Specified goods — ${goods} — value ₹${fmt(val)} exceeds threshold of ₹50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Goa: Specified goods — ${goods} — value ₹${fmt(val)} does not exceed ₹50,000.${notifRef(src)}`);
+      } else {
+        showResult(false, "E-way Bill Not Required",
+          `Goa: Goods other than specified goods are exempt from intra-state E-way Bill requirements.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── Gujarat (Threshold Logic per Notif. GSL/GST/RULE-138(14)/B.19) ─── */
+    case "Gujarat": {
+      const gMove = moveState || move;
+      const isTextile = GJ_TEXTILES.has(goods);
+      const txLabel = txType === "job-work" ? "For Job Work" : "For Any Purpose";
+
+      /* Rule 1: All Goods + For Any Purpose + Intra City Movement → Not Required */
+      if (gMove === "intra-city") {
+        showResult(false, "E-way Bill Not Required",
+          `Gujarat (Intra City Movement): All Goods — For Any Purpose — E-way Bill is Not Required.${notifRef(src)}`);
+      }
+      /* Rule 2: Specified Goods (Hank/Yarn/Fabric/Garments) + For Job Work + Inter-city Movement → Not Required */
+      else if (isTextile && txType === "job-work" && gMove === "intercity") {
+        showResult(false, "E-way Bill Not Required",
+          `Gujarat (Inter-city Movement): Specified Goods — ${goods} — For Job Work — E-way Bill is Not Required.${notifRef(src)}`);
+      }
+      /* Rule 3: Other than specified Goods + For Any Purpose + Inter-city Movement → Above Rs. 50,000 */
+      else if (!specified && gMove === "intercity") {
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Gujarat (Inter-city Movement): Other than specified Goods — For Any Purpose — value ₹${fmt(val)} exceeds threshold of Above Rs. 50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Gujarat (Inter-city Movement): Other than specified Goods — For Any Purpose — value ₹${fmt(val)} does not exceed threshold of Rs. 50,000.${notifRef(src)}`);
+      }
+      /* Rule 4: Specified Goods + For Any Purpose (other than Job Work) + Inter-city Movement → Above Rs. 50,000 */
+      else if (isTextile && txType === "other-than-job" && gMove === "intercity") {
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Gujarat (Inter-city Movement): Specified Goods — ${goods} — For Any Purpose — value ₹${fmt(val)} exceeds threshold of Above Rs. 50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Gujarat (Inter-city Movement): Specified Goods — ${goods} — For Any Purpose — value ₹${fmt(val)} does not exceed threshold of Rs. 50,000.${notifRef(src)}`);
+      }
+      /* Fallback — Above Rs. 50,000 */
+      else {
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Gujarat: Any Goods — For Any Purpose — value ₹${fmt(val)} exceeds threshold of Above Rs. 50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Gujarat: Any Goods — For Any Purpose — value ₹${fmt(val)} does not exceed threshold of Rs. 50,000.${notifRef(src)}`);
+      }
+      break;
+    }
+
+    /* ─── Jammu and Kashmir ─── */
+    case "Jammu and Kashmir":
+      showResult(false, "E-way Bill Not Required",
+        `Jammu & Kashmir: All intra-state movements are exempt from E-way Bill requirements.${notifRef(src)}`);
+      break;
+
+    /* ─── Jharkhand ─── */
+    case "Jharkhand":
+      if (specified) {
+        /* Specified Goods — Above Rs. 50,000 */
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Jharkhand: Specified Goods — ${goods} — value ₹${fmt(val)} exceeds threshold of Above Rs. 50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Jharkhand: Specified Goods — ${goods} — value ₹${fmt(val)} does not exceed threshold of Rs. 50,000.${notifRef(src)}`);
+      } else {
+        /* Other than specified Goods — Intra-State Movement — Above Rs. 1,00,000 */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Jharkhand (Intra-State Movement): Other than specified Goods — Any other goods — value ₹${fmt(val)} exceeds threshold of Above Rs. 1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Jharkhand (Intra-State Movement): Other than specified Goods — Any other goods — value ₹${fmt(val)} does not exceed threshold of Rs. 1,00,000.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── Kerala ─── */
+    case "Kerala":
+      if (specified) {
+        /* Gold and Precious Stones — ₹10,00,000 */
+        val > 1000000
+          ? showResult(true, "E-way Bill Required",
+              `Kerala: ${goods} — consignment value ₹${fmt(val)} exceeds threshold of ₹10,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Kerala: ${goods} — consignment value ₹${fmt(val)} does not exceed ₹10,00,000.${notifRef(src)}`);
+      } else {
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Kerala: General goods value ₹${fmt(val)} exceeds threshold of ₹50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Kerala: General goods value ₹${fmt(val)} does not exceed ₹50,000.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── Madhya Pradesh ─── */
+    case "Madhya Pradesh":
+      if (move === "intra-city") {
+        /* Intra-City — ₹1,00,000 for all goods */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Madhya Pradesh (Intra-City): Value ₹${fmt(val)} exceeds threshold of ₹1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Madhya Pradesh (Intra-City): Value ₹${fmt(val)} does not exceed ₹1,00,000.${notifRef(src)}`);
+      } else if (specified) {
+        if (MP_EXEMPT_GOODS.has(goods)) {
+          /* Medicines, Surgical Items, APIs — exempt for intercity */
+          showResult(false, "E-way Bill Not Required",
+            `Madhya Pradesh (Intercity): ${goods} are exempt from E-way Bill requirements.${notifRef(src)}`);
+        } else if (MP_THRESHOLD_GOODS.has(goods)) {
+          /* Tobacco, Pan Masala — ₹50,000 for intercity */
+          val > 50000
+            ? showResult(true, "E-way Bill Required",
+                `Madhya Pradesh (Intercity): ${goods} — value ₹${fmt(val)} exceeds threshold of ₹50,000.${notifRef(src)}`)
+            : showResult(false, "E-way Bill Not Required",
+                `Madhya Pradesh (Intercity): ${goods} — value ₹${fmt(val)} does not exceed ₹50,000.${notifRef(src)}`);
+        }
+      } else {
+        /* Other goods — ₹1,00,000 for intercity */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Madhya Pradesh (${lbl(move)}): General goods value ₹${fmt(val)} exceeds threshold of ₹1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Madhya Pradesh (${lbl(move)}): General goods value ₹${fmt(val)} does not exceed ₹1,00,000.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── Maharashtra ─── */
+    case "Maharashtra": {
+      if (specified && MH_SPECIFIED.has(goods)) {
+        if (txType === "job-work-50km") {
+          showResult(false, "E-way Bill Not Required",
+            `Maharashtra: Specified textile — ${goods} — Job Work within 50 KM is exempt from E-way Bill.${notifRef(src)}`);
+        } else if (txType === "job-work-above50") {
+          val > 100000
+            ? showResult(true, "E-way Bill Required",
+                `Maharashtra: ${goods} — Job Work above 50 KM — value ₹${fmt(val)} is above ₹1,00,000. E-way Bill is required.${notifRef(src)}`)
+            : showResult(false, "E-way Bill Not Required",
+                `Maharashtra: ${goods} — Job Work above 50 KM — value ₹${fmt(val)} does not exceed ₹1,00,000. E-way Bill is not required.${notifRef(src)}`);
+        } else {
+          showResult(false, "Incomplete Details", "Please select the Type of Transaction for Maharashtra.");
+        }
+      } else {
+        const txLabel = txType === "job-work" ? "For Job Work" : "For Other Than Job Work";
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Maharashtra (${lbl(move)}): ${txLabel} — value ₹${fmt(val)} is above ₹1,00,000. E-way Bill is required.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Maharashtra (${lbl(move)}): ${txLabel} — value ₹${fmt(val)} does not exceed ₹1,00,000. E-way Bill is not required.${notifRef(src)}`);
+      }
+      break;
+    }
+
+    /* ─── Punjab ─── */
+    case "Punjab":
+      if (specified) {
+        /* Specified goods — ₹50,000 threshold */
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `Punjab: Specified goods — ${goods} — value ₹${fmt(val)} exceeds threshold of ₹50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Punjab: Specified goods — ${goods} — value ₹${fmt(val)} does not exceed ₹50,000.${notifRef(src)}`);
+      } else {
+        /* Other than specified goods — ₹1,00,000 threshold */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Punjab: General goods value ₹${fmt(val)} exceeds threshold of ₹1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Punjab: General goods value ₹${fmt(val)} does not exceed ₹1,00,000.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── Rajasthan ─── */
+    case "Rajasthan":
+      if (specified) {
+        /* Specified goods (Tobacco, Wood, Iron, Steel) — even for intra-city, threshold is ₹1,00,000 */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Rajasthan (${lbl(move)}): Specified goods — ${goods} — value ₹${fmt(val)} exceeds threshold of ₹1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Rajasthan (${lbl(move)}): Specified goods — ${goods} — value ₹${fmt(val)} does not exceed ₹1,00,000.${notifRef(src)}`);
+      } else if (move === "intra-city") {
+        /* Intra-city, general goods — ₹1,00,000 */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Rajasthan (Intra-City): General goods value ₹${fmt(val)} exceeds threshold of ₹1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Rajasthan (Intra-City): General goods value ₹${fmt(val)} does not exceed ₹1,00,000.${notifRef(src)}`);
+      } else {
+        /* Intercity, general goods — ₹1,00,000 */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Rajasthan (${lbl(move)}): General goods value ₹${fmt(val)} exceeds threshold of ₹1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Rajasthan (${lbl(move)}): General goods value ₹${fmt(val)} does not exceed ₹1,00,000.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── Tamil Nadu ─── */
+    case "Tamil Nadu":
+      if (specified && TN_EXEMPT_GOODS.has(goods)) {
+        /* Exempt specified goods — Not Required at any value */
+        showResult(false, "E-way Bill Not Required",
+          `Tamil Nadu: ${goods} — exempt from intra-state E-way Bill requirements at any value.${notifRef(src)}`);
+      } else {
+        /* All other goods — Above ₹1,00,000 threshold */
+        val > 100000
+          ? showResult(true, "E-way Bill Required",
+              `Tamil Nadu (Intra-State Movement): Any Goods — Consignment value ₹${fmt(val)} exceeds the intra-state threshold of ₹1,00,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `Tamil Nadu (Intra-State Movement): Any Goods — Consignment value ₹${fmt(val)} does not exceed the intra-state threshold of ₹1,00,000.${notifRef(src)}`);
+      }
+      break;
+
+    /* ─── West Bengal ─── */
+    case "West Bengal":
+      if (txType === "job-work") {
+        /* For Job Work — Not Required at any value */
+        showResult(false, "E-way Bill Not Required",
+          `West Bengal (Intra-State Movement): Any Goods — For Job Work — E-way Bill is Not Required.${notifRef(src)}`);
+      } else {
+        /* For Any Purpose — Above Rs. 50,000 */
+        val > 50000
+          ? showResult(true, "E-way Bill Required",
+              `West Bengal (Intra-State Movement): Any Goods — For Any Purpose — Consignment value ₹${fmt(val)} exceeds the threshold of Above Rs. 50,000.${notifRef(src)}`)
+          : showResult(false, "E-way Bill Not Required",
+              `West Bengal (Intra-State Movement): Any Goods — For Any Purpose — Consignment value ₹${fmt(val)} does not exceed the threshold of Rs. 50,000.${notifRef(src)}`);
+      }
+      break;
+  }
+}
+
+let _skipScroll = false;
+
+function showResult(required, title, message) {
+  const card = document.getElementById("resultCard");
+  card.classList.remove("default","yes-result","no-result");
+  card.classList.add(required ? "yes-result" : "no-result");
+  card.querySelector(".result-icon-wrap").innerHTML = required
+    ? '<i class="fas fa-triangle-exclamation"></i>'
+    : '<i class="fas fa-circle-check"></i>';
+  card.querySelector(".result-text").innerText    = title;
+  card.querySelector(".result-details").innerHTML = message;
+  document.getElementById("checkBtn").classList.add("hidden");
+  document.getElementById("resetBtn").classList.remove("hidden");
+  if (!_skipScroll) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESET FORM
+   ═══════════════════════════════════════════════════════════════════════════════ */
+function resetForm() {
+  source.value = ""; dest.value = "";
+  goodsDrop.innerHTML = '<option value="">Select goods</option>';
+  document.getElementById("typeOfGoods").value  = "";
+  document.getElementById("invoiceValue").value = "";
+  document.getElementById("transactionType").innerHTML = '<option value="">Select transaction type</option>';
+  document.getElementById("movementTypeState").value   = "";
+  document.getElementById("sameCity").value            = "";
+  document.getElementById("transactionTypeGroup").classList.add("hidden");
+  document.getElementById("movementTypeStateGroup").classList.add("hidden");
+  document.getElementById("sameCityGroup").classList.add("hidden");
+  const badge = document.getElementById("movementBadge");
+  badge.className = "movement-badge empty";
+  badge.innerHTML = '<i class="fas fa-route"></i> Select both states to detect movement type';
+  const card = document.getElementById("resultCard");
+  card.classList.remove("yes-result","no-result");
+  card.classList.add("default");
+  card.querySelector(".result-icon-wrap").innerHTML = '<i class="fas fa-magnifying-glass-chart"></i>';
+  card.querySelector(".result-text").innerText    = "Fill the form to check requirement";
+  card.querySelector(".result-details").innerText = "Complete all fields to determine E-way Bill applicability";
+  document.getElementById("checkBtn").classList.remove("hidden");
+  document.getElementById("resetBtn").classList.add("hidden");
+}
+
+</script>
+</body>
+</html>
